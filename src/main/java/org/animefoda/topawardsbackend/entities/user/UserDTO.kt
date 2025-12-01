@@ -7,4 +7,13 @@ data class UserDTO(
     val email: String,
     val name: String,
     val type: UserType,
-): BaseDTO(id)
+): BaseDTO<UserDTO, UserEntity>(id) {
+    override fun toEntity(): UserEntity {
+        val entity = UserEntity()
+        entity.id = this.id
+        entity.email = email
+        entity.name = name
+        entity.type = type
+        return entity
+    }
+}

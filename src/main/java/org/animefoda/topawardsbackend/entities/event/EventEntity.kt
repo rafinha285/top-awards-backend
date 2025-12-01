@@ -1,26 +1,24 @@
-package org.animefoda.topawardsbackend.entities.event;
+package org.animefoda.topawardsbackend.entities.event
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.animefoda.topawardsbackend.entities.BaseEntity;
-
-import java.time.OffsetDateTime;
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import org.animefoda.topawardsbackend.entities.BaseEntity
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "event")
-@Data
-public class EventEntity extends BaseEntity<EventDTO> {
+class EventEntity: BaseEntity<EventEntity,EventDTO>() {
     @Column
-    private String name;
+    var name = ""
 
     @Column(name = "start_date")
-    private OffsetDateTime startDate;
+    var startDate: OffsetDateTime = OffsetDateTime.now()
 
     @Column(name = "end_date")
-    private OffsetDateTime endDate;
+    var endDate: OffsetDateTime = OffsetDateTime.now().plusMonths(1)
 
-    @Override
-    public EventDTO toDTO() {
-        return new EventDTO(this.getId(), name, startDate, endDate);
+    public override fun toDTO(): EventDTO {
+        return EventDTO(this.id, name, startDate, endDate)
     }
 }

@@ -8,7 +8,7 @@ import org.animefoda.topawardsbackend.entities.category.CategoryEntity
 
 @Entity
 @Table(name = "nominee")
-class NomineeEntity : BaseEntity<NomineeDTO>() {
+class NomineeEntity : BaseEntity<NomineeEntity,NomineeDTO>() {
     @Column
     var name = ""
 

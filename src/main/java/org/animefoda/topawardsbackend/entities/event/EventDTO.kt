@@ -8,5 +8,13 @@ data class EventDTO(
     val name: String,
     val startDate: OffsetDateTime,
     val endDate: OffsetDateTime,
-): BaseDTO(id) {
+): BaseDTO<EventDTO, EventEntity>(id) {
+    override fun toEntity(): EventEntity {
+        val entity = EventEntity()
+        entity.id = id;
+        entity.name = name
+        entity.startDate = startDate
+        entity.endDate = endDate
+        return entity
+    }
 }

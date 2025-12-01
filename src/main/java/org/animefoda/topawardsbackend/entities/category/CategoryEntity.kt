@@ -1,33 +1,34 @@
-package org.animefoda.topawardsbackend.entities.category;
+package org.animefoda.topawardsbackend.entities.category
 
-import jakarta.persistence.*;
-import lombok.Data;
-import org.animefoda.topawardsbackend.entities.BaseEntity;
-import org.animefoda.topawardsbackend.entities.event.EventEntity;
-import org.animefoda.topawardsbackend.entities.nominee.NomineeEntity;
-
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.*
+import org.animefoda.topawardsbackend.entities.BaseEntity
+import org.animefoda.topawardsbackend.entities.event.EventEntity
+import org.animefoda.topawardsbackend.entities.nominee.NomineeDTO
+import org.animefoda.topawardsbackend.entities.nominee.NomineeEntity
 
 @Entity
 @Table(name = "category")
-public class CategoryEntity extends BaseEntity<CategoryDTO> {
-
+class CategoryEntity: BaseEntity<CategoryEntity, CategoryDTO>() {
     @Column(unique = true)
-    private String name;
+    var name:String = "";
 
     @Column
-    private String description;
+    var description = ""
 
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private EventEntity event;
+    var event: EventEntity? = null
 
     @ManyToMany(mappedBy = "categories")
-    private Set<NomineeEntity> nominees = new HashSet<>();
+    var nominees: MutableSet<NomineeEntity?> = mutableSetOf()
 
-    @Override
-    public CategoryDTO toDTO() {
-        return new CategoryDTO(this.getId(), name, description, event.toDTO(),nominees.stream().map(NomineeEntity::toDTO).toList());
+    override fun toDTO(): CategoryDTO {
+        return CategoryDTO(
+            this.id,
+            name,
+            description,
+            event!!.toDTO(),
+            nominees.stream().map<NomineeDTO> { obj: NomineeEntity? -> obj!!.toDTO() }.toList()
+        )
     }
 }

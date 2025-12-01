@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
 @Table(name = "users")
-open class UserEntity : BaseEntity<UserDTO>(), UserDetails {
+open class UserEntity : BaseEntity<UserEntity, UserDTO>(), UserDetails {
 
     // Em Kotlin, declarar 'var' JÁ CRIA getter e setter automaticamente!
     // Não precisa de @Getter nem @Setter

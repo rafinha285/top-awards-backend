@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "user_sessions") // Dica: Use plural
-class SessionEntity : BaseEntity<SessionDTO>() {
+class SessionEntity : BaseEntity<SessionEntity, SessionDTO>() {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
