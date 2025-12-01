@@ -1,9 +1,6 @@
 package org.animefoda.topawardsbackend.entities.vote;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import org.animefoda.topawardsbackend.entities.BaseEntity;
 import org.animefoda.topawardsbackend.entities.category.CategoryEntity;
 import org.animefoda.topawardsbackend.entities.nominee.NomineeEntity;
@@ -11,6 +8,8 @@ import org.animefoda.topawardsbackend.entities.user.UserEntity;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "votes")
 public class Vote extends BaseEntity<VoteDTO> {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

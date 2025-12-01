@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.animefoda.topawardsbackend.entities.BaseEntity;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity extends BaseEntity<UserDTO> {
     @Column(unique = true, nullable = false)
     private String email;
