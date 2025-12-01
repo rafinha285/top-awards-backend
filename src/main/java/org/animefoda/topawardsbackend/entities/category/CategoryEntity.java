@@ -28,6 +28,6 @@ public class CategoryEntity extends BaseEntity<CategoryDTO> {
 
     @Override
     public CategoryDTO toDTO() {
-        return new CategoryDTO(id, name, description, event.toDTO(),nominees.stream().map(NomineeEntity::toDTO).toList());
+        return new CategoryDTO(this.getId(), name, description, event.toDTO(),nominees.stream().map(NomineeEntity::toDTO).toList());
     }
 }

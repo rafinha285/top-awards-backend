@@ -4,6 +4,7 @@ import org.animefoda.topawardsbackend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,10 +45,13 @@ class GlobalExceptionHandler {
         return new ResponseEntity<>(ApiResponse.error(message, ErrorCode.VALIDATION_ERROR), HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(BadRequestException.class)
-//    public ResponseEntity<ApiResponse<Object>> handleBadRequest(BadRequestException ex) {
-//        ApiResponse<Object> response = ApiResponse.error(ex.getMessage()+ " " + ex.getUserError(), ex.getErrorCode());
-//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        // 1. Instancia sua classe customizada
+        Unauthorized customError = new Unauthorized("Acesso negado: Você não possui permissão para realizar esta ação.");
+
+        // 2. Reutiliza sua lógica padrão de BaseError para montar o JSON
+        return handleBaseError(customError);
+    }
 
 }

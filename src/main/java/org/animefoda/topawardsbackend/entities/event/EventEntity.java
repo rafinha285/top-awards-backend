@@ -21,6 +21,6 @@ public class EventEntity extends BaseEntity<EventDTO> {
 
     @Override
     public EventDTO toDTO() {
-        return new EventDTO(id, name, startDate, endDate);
+        return new EventDTO(this.getId(), name, startDate, endDate);
     }
 }

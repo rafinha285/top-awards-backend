@@ -26,15 +26,33 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
-        if(token != null) {
-            var login = tokenService.validateToken(token);
-            UserEntity user = userRepository.findByEmail(login);
 
-            if(user != null) {
-                var authorization = new UsernamePasswordAuthenticationToken(user, login);
-                SecurityContextHolder.getContext().setAuthentication(authorization);
+        if(token != null){
+            var login = tokenService.validateToken(token);
+
+            // --- DEBUG ---
+            if (login.isEmpty()) {
+                System.out.println("❌ ERRO NO FILTRO: Token inválido ou expirado.");
+            } else {
+                System.out.println("✅ TOKEN VALIDADO. Usuário no token: " + login);
             }
+            // -------------
+
+            if(!login.isEmpty()){
+                UserEntity user = userRepository.findByEmail(login);
+
+                if(user != null) {
+                    System.out.println("✅ USUÁRIO ENCONTRADO NO BANCO. Roles: " + user.getAuthorities()); // DEBUG
+                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    System.out.println("❌ ERRO NO FILTRO: Usuário não encontrado no banco de dados (Email: " + login + ")"); // DEBUG
+                }
+            }
+        } else {
+            System.out.println("⚠️ AVISO: Requisição sem token ou header inválido."); // DEBUG
         }
+
         filterChain.doFilter(request, response);
     }
 

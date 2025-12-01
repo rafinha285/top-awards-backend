@@ -8,9 +8,9 @@ import org.animefoda.topawardsbackend.entities.user.UserDTO
 import java.time.LocalDateTime
 
 data class VoteDTO(
-    override val id: Int,
+    override val id: Int?,
     val user: UserDTO,
     val category: CategoryDTO,
     val nominee: NomineeDTO,
     val votedAt: LocalDateTime
-): BaseDTO(id)
+): BaseDTO()

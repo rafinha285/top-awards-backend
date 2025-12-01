@@ -1,30 +1,26 @@
-package org.animefoda.topawardsbackend.entities.nominee;
+package org.animefoda.topawardsbackend.entities.nominee
 
-import jakarta.persistence.*;
-import lombok.Data;
-import org.animefoda.topawardsbackend.entities.BaseDTO;
-import org.animefoda.topawardsbackend.entities.BaseEntity;
-import org.animefoda.topawardsbackend.entities.category.CategoryEntity;
-
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.*
+import lombok.Getter
+import lombok.Setter
+import org.animefoda.topawardsbackend.entities.BaseEntity
+import org.animefoda.topawardsbackend.entities.category.CategoryEntity
 
 @Entity
 @Table(name = "nominee")
-public class NomineeEntity extends BaseEntity<NomineeDTO> {
+class NomineeEntity : BaseEntity<NomineeDTO>() {
     @Column
-    private String name;
+    var name = ""
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "nomination",
-            joinColumns = @JoinColumn(name = "nominee_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
+        name = "nomination",
+        joinColumns = [JoinColumn(name = "nominee_id")],
+        inverseJoinColumns = [JoinColumn(name = "category_id")]
     )
-    private Set<CategoryEntity> categories = new HashSet<>();
+    val categories: MutableSet<CategoryEntity?> = HashSet<CategoryEntity?>()
 
-    @Override
-    public NomineeDTO toDTO() {
-        return new NomineeDTO(id, name);
+    public override fun toDTO(): NomineeDTO {
+        return NomineeDTO(this.id, name)
     }
 }

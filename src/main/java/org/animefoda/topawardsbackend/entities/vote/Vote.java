@@ -28,6 +28,6 @@ public class Vote extends BaseEntity<VoteDTO> {
 
     @Override
     public VoteDTO toDTO() {
-        return new VoteDTO(id, user.toDTO(), category.toDTO(), nominee.toDTO(), votedAt);
+        return new VoteDTO(this.getId(), user.toDTO(), category.toDTO(), nominee.toDTO(), votedAt);
     }
 }

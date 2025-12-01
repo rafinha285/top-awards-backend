@@ -1,17 +1,16 @@
-package org.animefoda.topawardsbackend.entities;
+package org.animefoda.topawardsbackend.entities
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.MappedSuperclass
 
 @MappedSuperclass
-@Getter
-@Setter
-public abstract class BaseEntity<D extends BaseDTO> {
-    public abstract D toDTO();
-
+abstract class BaseEntity<D: BaseDTO> {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public var id: Int? = null
+
+    abstract fun toDTO(): D
+
 }
