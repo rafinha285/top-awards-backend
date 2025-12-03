@@ -8,6 +8,7 @@ import org.animefoda.topawardsbackend.entities.user.UserEntity
 import org.animefoda.topawardsbackend.entities.user.UserRepository
 import org.animefoda.topawardsbackend.entities.user.UserType
 import org.animefoda.topawardsbackend.exception.AlreadyExistsException
+import org.animefoda.topawardsbackend.exception.BadRequestException
 import org.animefoda.topawardsbackend.request.AuthResponse
 import org.animefoda.topawardsbackend.request.LoginRequest
 import org.animefoda.topawardsbackend.request.RegisterRequest
@@ -33,8 +34,9 @@ class AuthController(
     private val emailValidator: EmailValidator
 ) {
     @PostMapping("/register")
-    fun register(@RequestBody data: RegisterRequest, request: HttpServletRequest): ApiResponse<Any> {
+    fun register(@RequestBody data: RegisterRequest, request: HttpServletRequest): ApiResponse<AuthResponse> {
         val userIp = request.remoteAddr
+
 
         if (!emailValidator.isValid(data.email)) {
             throw RuntimeException("Email inválido ou domínio inexistente.")
@@ -60,7 +62,9 @@ class AuthController(
 
         this.saveSession(savedUser, data.fingerprint, userIp)
 
-        return ApiResponse.success(null, "Conta criada")
+        val token = tokenService.generateToken(savedUser)
+
+        return ApiResponse.success(AuthResponse(token, savedUser.toDTO()), "Conta criada")
     }
 
     @PostMapping("/login")
@@ -75,17 +79,17 @@ class AuthController(
 
         saveSession(user, data.fingerprint, request.remoteAddr)
 
-        return ApiResponse.success(AuthResponse(token, user.name))
+        return ApiResponse.success(AuthResponse(token, user.toDTO()))
     }
 
 
-    private fun saveSession(user: UserEntity, fingerprint: String, ip: String) {
+    private fun saveSession(user: UserEntity, fingerprint: String, ip: String): SessionEntity{
         val session = SessionEntity().apply {
             this.user = user
             this.fingerprint = fingerprint
             this.ipAddress = ip
             this.loginAt = LocalDateTime.now()
         }
-        userSessionRepository.save(session)
+        return userSessionRepository.save(session)
     }
 }

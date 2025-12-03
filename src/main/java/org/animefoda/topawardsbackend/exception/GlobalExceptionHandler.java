@@ -37,12 +37,17 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+        String errorMessage = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> err.getDefaultMessage()) // Pega a mensagem definida na anotação
                 .findFirst()
-                .orElse("Validation error");
+                .orElse("Erro de validação desconhecido");
 
-        return new ResponseEntity<>(ApiResponse.error(message, ErrorCode.VALIDATION_ERROR), HttpStatus.BAD_REQUEST);
+        ApiResponse<Object> response = ApiResponse.error(errorMessage, ErrorCode.VALIDATION_ERROR);
+        ex.printStackTrace();
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -53,5 +58,4 @@ class GlobalExceptionHandler {
         // 2. Reutiliza sua lógica padrão de BaseError para montar o JSON
         return handleBaseError(customError);
     }
-
 }
