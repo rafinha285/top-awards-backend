@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+    api:
+        container_name: topawards-backend
+        build: .
+        restart: always
+        ports:
+            - "8080:8080"
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/meu_db
+            - SPRING_DATASOURCE_USERNAME=user
+            - SPRING_DATASOURCE_PASSWORD=supersecret
+            
+            - SPRING_DATA_REDIS_HOST=redis
+            - SPRING_DATA_REDIS_PORT=6379
+            
+            # --- SUAS CONFIGS ---
+            - JWT_SECRET_KEY=sua_chave_secreta_aqui
+        
+        # Conecta este container à rede externa
+        networks:
+            - rede_compartilhada
+
+# AQUI É O PULO DO GATO
+networks:
+    rede_compartilhada:
+        external: true
+        # COLOQUE AQUI O NOME QUE VOCÊ ACHOU NO 'docker network ls'
+        # Exemplo: infra_database
+        name: backend_database
