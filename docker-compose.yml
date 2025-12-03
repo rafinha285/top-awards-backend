@@ -8,15 +8,14 @@ services:
         ports:
             - "8080:8080"
         environment:
-            - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/meu_db
-            - SPRING_DATASOURCE_USERNAME=user
-            - SPRING_DATASOURCE_PASSWORD=supersecret
-            
-            - SPRING_DATA_REDIS_HOST=redis
-            - SPRING_DATA_REDIS_PORT=6379
-            
-            # --- SUAS CONFIGS ---
-            - JWT_SECRET_KEY=sua_chave_secreta_aqui
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+                - SPRING_DATASOURCE_USERNAME=${DB_USER}
+                - SPRING_DATASOURCE_PASSWORD=${DB_PASS}
+                
+                - SPRING_DATA_REDIS_HOST=${REDIS_HOST}
+                - SPRING_DATA_REDIS_PORT=${REDIS_PORT}
+                
+                - JWT_SECRET_KEY=${JWT_SECRET}
         
         # Conecta este container à rede externa
         networks:
@@ -28,4 +27,4 @@ networks:
         external: true
         # COLOQUE AQUI O NOME QUE VOCÊ ACHOU NO 'docker network ls'
         # Exemplo: infra_database
-        name: backend_database
+        name: ${NETWORK_NAME}
