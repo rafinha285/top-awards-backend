@@ -65,8 +65,19 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Permite o Frontend (Vite geralmente é 5173, React puro é 3000)
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+        String frontendUrl = System.getenv("FRONTEND_URL");
+
+        if (frontendUrl == null || frontendUrl.isBlank()) {
+            frontendUrl = "http://localhost:5173"; // Fallback para dev
+        }
+
+        // 2. Adicione TODAS as origens possíveis
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173", // Vite Local
+                "http://localhost:3000", // React Local
+                "http://192.168.0.25:80", // Acesso pela rede local (opcional)
+                frontendUrl // <--- AQUI ENTRA O CLOUDFLARE
+        ));
 
         // Permite os métodos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
