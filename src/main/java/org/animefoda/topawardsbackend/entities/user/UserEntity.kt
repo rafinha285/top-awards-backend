@@ -18,7 +18,7 @@ open class UserEntity : BaseEntity<UserEntity, UserDTO>(), UserDetails {
     @Column(name = "password", nullable = false)
     var passwordHash: String = ""
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", nullable = false)
     var name: String = ""
 
     @Column(name = "type", nullable = false)

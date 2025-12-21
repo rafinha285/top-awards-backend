@@ -74,6 +74,7 @@ public class SecurityConfiguration {
         // 2. Adicione TODAS as origens possíveis
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173", // Vite Local
+                "http://localhost:5174",
                 "http://localhost:3000", // React Local
                 "http://192.168.0.25:80", // Acesso pela rede local (opcional)
                 frontendUrl // <--- AQUI ENTRA O CLOUDFLARE
