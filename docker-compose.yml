@@ -21,6 +21,7 @@ services:
             - JWT_SECRET=${JWT_SECRET}
 
             - FRONTEND_URL=${FRONTEND_URL}
+            - ADMIN_FRONTEND_URL=${ADMIN_FRONTEND_URL}
         
         # Conecta este container à rede externa
         networks:

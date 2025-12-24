@@ -36,28 +36,28 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize ->authorize
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        // .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/nominees").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/nominees/**").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/nominees/**").hasAnyRole("ADMIN", "USER")
 
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -66,9 +66,13 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
 
         String frontendUrl = System.getenv("FRONTEND_URL");
+        String adminFrontendUrl = System.getenv("ADMIN_FRONTEND_URL");
 
         if (frontendUrl == null || frontendUrl.isBlank()) {
             frontendUrl = "http://localhost:5173"; // Fallback para dev
+        }
+        if (adminFrontendUrl == null || adminFrontendUrl.isBlank()) {
+            adminFrontendUrl = "http://localhost:5173"; // Fallback para dev
         }
 
         // 2. Adicione TODAS as origens possíveis
@@ -77,6 +81,7 @@ public class SecurityConfiguration {
                 "http://localhost:5174",
                 "http://localhost:3000", // React Local
                 "http://192.168.0.25:80", // Acesso pela rede local (opcional)
+                adminFrontendUrl, // Admin panel
                 frontendUrl // <--- AQUI ENTRA O CLOUDFLARE
         ));
 
