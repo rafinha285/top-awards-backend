@@ -47,6 +47,22 @@ class NomineeService(
     @Caching(
         evict = [
             CacheEvict("nominees", allEntries = true),
+            CacheEvict("nominee", key = "#id", allEntries = true),
+        ]
+    )
+    fun update(id:Int, dto: NomineeDTO): NomineeDTO {
+        nomineeRepository.findById(id)
+            .orElseThrow { NotFound("Nominee $id not found") }
+        val nominee = dto.toEntity()
+        nominee.id = id
+        val savedNominee = nomineeRepository.save(nominee)
+        return savedNominee.toDTO()
+    }
+
+    @Transactional
+    @Caching(
+        evict = [
+            CacheEvict("nominees", allEntries = true),
             CacheEvict("nominee", key = "#id")
         ]
     )

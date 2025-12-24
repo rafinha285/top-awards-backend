@@ -32,6 +32,11 @@ open class NomineeController(
     open fun create(@RequestBody dto: NomineeDTO): ApiResponse<NomineeDTO> {
         return ApiResponse.success(nomineeService.create(dto), message = "Nominee created successfully")
     }
+    @PostMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    open fun update(@PathVariable id: Int, @RequestBody dto: NomineeDTO): ApiResponse<*> {
+        return ApiResponse.success(nomineeService.update(id, dto), message = "Nominee updated successfully")
+    }
 
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
