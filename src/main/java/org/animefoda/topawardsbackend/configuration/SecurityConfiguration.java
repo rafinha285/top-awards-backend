@@ -48,6 +48,8 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.GET, "/nominees/**").hasAnyRole("ADMIN", "USER")
 
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -85,8 +87,8 @@ public class SecurityConfiguration {
                 "http://localhost:3000", // React Local
                 "http://192.168.0.25:80", // Acesso pela rede local (opcional)
                 adminFrontendUrl, // Admin panel
-                frontendUrl // <--- AQUI ENTRA O CLOUDFLARE
-        ));
+                frontendUrl, // <--- AQUI ENTRA O CLOUDFLARE
+                "https://awards.animefoda.top"));
 
         // Permite os métodos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
