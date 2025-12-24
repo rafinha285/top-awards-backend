@@ -19,7 +19,12 @@ class CategoryEntity: BaseEntity<CategoryEntity, CategoryDTO>() {
     @ManyToOne(fetch = FetchType.LAZY)
     var event: EventEntity? = null
 
-    @ManyToMany(mappedBy = "categories")
+    @ManyToMany(fetch = FetchType.EAGER) // Eager ou Lazy, depende do seu uso
+    @JoinTable(
+        name = "nomination", // Nome da tabela de junção no banco
+        joinColumns = [JoinColumn(name = "category_id")],
+        inverseJoinColumns = [JoinColumn(name = "nominee_id")]
+    )
     var nominees: MutableSet<NomineeEntity?> = mutableSetOf()
 
     override fun toDTO(): CategoryDTO {

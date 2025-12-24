@@ -6,7 +6,11 @@ import org.animefoda.topawardsbackend.entities.category.CategoryInputDTO
 import org.animefoda.topawardsbackend.entities.category.CategoryRepository
 import org.animefoda.topawardsbackend.entities.event.EventRepository
 import org.animefoda.topawardsbackend.entities.nominee.NomineeRepository
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CategoryService(
@@ -15,6 +19,32 @@ class CategoryService(
     private val nomineeRepository: NomineeRepository
 ) {
 
+    @Cacheable("categories")
+    fun findAll(): List<CategoryDTO> {
+        return categoryRepository.findAll().map { it.toDTO() }
+    }
+
+    @Cacheable(value = ["category"], key = "#id")
+    fun findById(id: Int): CategoryDTO {
+        return categoryRepository.findById(id)
+            .orElseThrow { RuntimeException("Category $id not found") }
+            .toDTO()
+    }
+
+    @Cacheable(value = ["categoriesByEvent"], key = "#eventId")
+    fun findAllByEvent(eventId: Int): List<CategoryDTO> {
+        val event = eventRepository.findById(eventId)
+            .orElseThrow { RuntimeException("EventId $eventId not found") }
+        return categoryRepository.findAllByEvent(event).map { it.toDTO() }
+    }
+
+    @Transactional
+    @Caching(
+        evict = [
+            CacheEvict(value = ["categories"], allEntries = true),
+            CacheEvict(value = ["categoriesByEvent"], allEntries = true)
+        ]
+    )
     fun create(dto: CategoryInputDTO): CategoryDTO{
         val eventEntity = eventRepository.findById(dto.eventId)
             .orElseThrow { RuntimeException("Evento não encontrado com id: ${dto.eventId}") }
@@ -35,6 +65,21 @@ class CategoryService(
 
         // 4. Salva e converte de volta para o DTO completo para responder ao front
         val category = categoryRepository.save(entity)
+        return category.toDTO()
+    }
+
+    @Transactional
+    @Caching(
+        evict = [
+            CacheEvict(value = ["categories"], allEntries = true),
+            CacheEvict(value = ["category"], key = "#id"),
+            CacheEvict(value = ["categoriesByEvent"], allEntries = true)
+        ]
+    )
+    fun delete(id: Int): CategoryDTO {
+        val category = categoryRepository.findById(id)
+            .orElseThrow { RuntimeException("Category $id not found") }
+        categoryRepository.delete(category)
         return category.toDTO()
     }
 }

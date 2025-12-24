@@ -10,6 +10,7 @@ import org.animefoda.topawardsbackend.response.ApiResponse
 import org.animefoda.topawardsbackend.service.CategoryService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,32 +19,33 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/category")
-class CategoryController {
-
-    private val repository: CategoryRepository
-    private val eventRepository: EventRepository
+class CategoryController(
     private val categoryService: CategoryService
-
-    constructor(
-        categoryRepository: CategoryRepository,
-        eventRepository: EventRepository,
-        categoryService: CategoryService
-    ) {
-        this.repository = categoryRepository
-        this.eventRepository = eventRepository
-        this.categoryService = categoryService
-    }
+) {
 
     @GetMapping
     fun findAll(): ApiResponse<List<CategoryDTO>>{
-        val categories = repository.findAll().map { it.toDTO() }
+        val categories = categoryService.findAll()
         return ApiResponse.success(categories)
     }
 
-    @GetMapping("/{eventId}")
-    fun findAllByEventId(@RequestParam eventId: Int): ApiResponse<List<CategoryDTO>> {
-        val event = eventRepository.findById(eventId).orElseThrow { NotFound("EventId $eventId not found") }
-        val category = repository.findAllByEvent(event).map { it.toDTO()}
+    @GetMapping("/{id}")
+    fun findById(@PathVariable id: Int): ApiResponse<CategoryDTO>{
+        val category = categoryService.findById(id)
+        return ApiResponse.success(category)
+    }
+
+
+    @GetMapping("/event/{eventId}")
+    fun findAllByEventId(@PathVariable eventId: Int): ApiResponse<List<CategoryDTO>> {
+        val categories = categoryService.findAllByEvent(eventId)
+        return ApiResponse.success(categories)
+    }
+
+    @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    fun deleteById(@PathVariable id: Int):ApiResponse<CategoryDTO>{
+        val category = categoryService.delete(id)
         return ApiResponse.success(category)
     }
 

@@ -31,18 +31,15 @@ public class SecurityFilter extends OncePerRequestFilter {
             var login = tokenService.validateToken(token);
 
             // --- DEBUG ---
-            if (login.isEmpty()) {
-                System.out.println("❌ ERRO NO FILTRO: Token inválido ou expirado.");
-            } else {
-                System.out.println("✅ TOKEN VALIDADO. Usuário no token: " + login);
-            }
+            //                System.out.println("❌ ERRO NO FILTRO: Token inválido ou expirado.");
+            //                System.out.println("✅ TOKEN VALIDADO. Usuário no token: " + login);
             // -------------
 
             if(!login.isEmpty()){
                 UserEntity user = userRepository.findByEmail(login);
 
                 if(user != null) {
-                    System.out.println("✅ USUÁRIO ENCONTRADO NO BANCO. Roles: " + user.getAuthorities()); // DEBUG
+//                    System.out.println("✅ USUÁRIO ENCONTRADO NO BANCO. Roles: " + user.getAuthorities()); // DEBUG
                     var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
