@@ -3,8 +3,11 @@ package org.animefoda.topawardsbackend.entities.category
 import jakarta.persistence.*
 import org.animefoda.topawardsbackend.entities.BaseEntity
 import org.animefoda.topawardsbackend.entities.event.EventEntity
+import org.animefoda.topawardsbackend.entities.event.EventRepository
 import org.animefoda.topawardsbackend.entities.nominee.NomineeDTO
 import org.animefoda.topawardsbackend.entities.nominee.NomineeEntity
+import org.animefoda.topawardsbackend.entities.nominee.NomineeRepository
+import org.animefoda.topawardsbackend.exception.NotFound
 
 @Entity
 @Table(name = "category")
@@ -35,5 +38,38 @@ class CategoryEntity: BaseEntity<CategoryEntity, CategoryDTO>() {
             event!!.toDTO(),
             nominees.stream().map<NomineeDTO> { obj: NomineeEntity? -> obj!!.toDTO() }.toList()
         )
+    }
+
+    companion object {
+        /**
+         * Creates or updates a CategoryEntity from CategoryInputDTO
+         * @param dto The input DTO with category data
+         * @param eventRepository Repository to fetch the event
+         * @param nomineeRepository Repository to fetch nominees
+         * @param existingEntity Optional existing entity for updates (null for create)
+         */
+        fun fromInput(
+            dto: CategoryInputDTO,
+            eventRepository: EventRepository,
+            nomineeRepository: NomineeRepository,
+            existingEntity: CategoryEntity? = null
+        ): CategoryEntity {
+            val eventEntity = eventRepository.findById(dto.eventId)
+                .orElseThrow { NotFound("Event not found with id: ${dto.eventId}") }
+
+            val nomineesEntities = if (dto.nomineeIds.isNotEmpty()) {
+                nomineeRepository.findAllById(dto.nomineeIds).toMutableSet()
+            } else {
+                mutableSetOf()
+            }
+
+            val entity = existingEntity ?: CategoryEntity()
+            entity.name = dto.name
+            entity.description = dto.description
+            entity.event = eventEntity
+            entity.nominees = nomineesEntities
+            
+            return entity
+        }
     }
 }

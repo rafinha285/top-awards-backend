@@ -6,6 +6,7 @@ import org.animefoda.topawardsbackend.entities.category.CategoryInputDTO
 import org.animefoda.topawardsbackend.entities.category.CategoryRepository
 import org.animefoda.topawardsbackend.entities.event.EventRepository
 import org.animefoda.topawardsbackend.entities.nominee.NomineeRepository
+import org.animefoda.topawardsbackend.exception.NotFound
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.cache.annotation.Caching
@@ -27,14 +28,14 @@ class CategoryService(
     @Cacheable(value = ["category"], key = "#id")
     fun findById(id: Int): CategoryDTO {
         return categoryRepository.findById(id)
-            .orElseThrow { RuntimeException("Category $id not found") }
+            .orElseThrow { NotFound("Category $id not found") }
             .toDTO()
     }
 
     @Cacheable(value = ["categoriesByEvent"], key = "#eventId")
     fun findAllByEvent(eventId: Int): List<CategoryDTO> {
         val event = eventRepository.findById(eventId)
-            .orElseThrow { RuntimeException("EventId $eventId not found") }
+            .orElseThrow { NotFound("EventId $eventId not found") }
         return categoryRepository.findAllByEvent(event).map { it.toDTO() }
     }
 
@@ -47,7 +48,7 @@ class CategoryService(
     )
     fun create(dto: CategoryInputDTO): CategoryDTO{
         val eventEntity = eventRepository.findById(dto.eventId)
-            .orElseThrow { RuntimeException("Evento não encontrado com id: ${dto.eventId}") }
+            .orElseThrow { NotFound("Evento não encontrado com id: ${dto.eventId}") }
 
         // 2. Busca os Nominees pelos IDs (se houver)
         val nomineesEntities = if (dto.nomineeIds.isNotEmpty()) {
@@ -76,9 +77,31 @@ class CategoryService(
             CacheEvict(value = ["categoriesByEvent"], allEntries = true)
         ]
     )
+    fun update(id: Int, dto: CategoryInputDTO): CategoryDTO {
+        val existingCategory = categoryRepository.findById(id)
+            .orElseThrow { NotFound("Category $id not found") }
+        
+        val updatedEntity = CategoryEntity.fromInput(
+            dto, 
+            eventRepository, 
+            nomineeRepository, 
+            existingCategory
+        )
+        
+        return categoryRepository.save(updatedEntity).toDTO()
+    }
+
+    @Transactional
+    @Caching(
+        evict = [
+            CacheEvict(value = ["categories"], allEntries = true),
+            CacheEvict(value = ["category"], key = "#id"),
+            CacheEvict(value = ["categoriesByEvent"], allEntries = true)
+        ]
+    )
     fun delete(id: Int): CategoryDTO {
         val category = categoryRepository.findById(id)
-            .orElseThrow { RuntimeException("Category $id not found") }
+            .orElseThrow { NotFound("Category $id not found") }
         categoryRepository.delete(category)
         return category.toDTO()
     }

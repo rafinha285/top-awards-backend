@@ -43,10 +43,15 @@ class CategoryController(
     }
 
     @PostMapping("/{id}/delete")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     fun deleteById(@PathVariable id: Int):ApiResponse<CategoryDTO>{
         val category = categoryService.delete(id)
         return ApiResponse.success(category)
+    }
+    @PostMapping("/{id}/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun update(@PathVariable id: Int, @RequestBody body: CategoryInputDTO): ApiResponse<CategoryDTO>{
+        return ApiResponse.success(categoryService.update(id, body))
     }
 
     @PostMapping("/new")
