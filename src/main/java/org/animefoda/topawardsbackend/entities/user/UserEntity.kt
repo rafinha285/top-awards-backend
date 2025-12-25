@@ -25,6 +25,9 @@ open class UserEntity : BaseEntity<UserEntity, UserDTO>(), UserDetails {
     @Enumerated(EnumType.STRING)
     var type: UserType = UserType.USER
 
+    @Column(nullable = false)
+    var active: Boolean = true
+
     // Seus métodos de lógica continuam aqui
     override fun toDTO(): UserDTO {
         // id vem da BaseEntity (se ela for Java, use getId())
@@ -47,5 +50,5 @@ open class UserEntity : BaseEntity<UserEntity, UserDTO>(), UserDetails {
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
     override fun isCredentialsNonExpired(): Boolean = true
-    override fun isEnabled(): Boolean = true
+    override fun isEnabled(): Boolean = active
 }
