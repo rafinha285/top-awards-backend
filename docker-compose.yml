@@ -26,6 +26,7 @@ services:
             - SAMBA_USER=${SAMBA_USER}
             - SAMBA_PASS=${SAMBA_PASS}
             - SAMBA_IP=${SAMBA_IP}
+            - SAMBA_SHARE=${SAMBA_SHARE}
         
         
         # Conecta este container à rede externa
@@ -50,4 +51,4 @@ volumes:
         driver_opts:
             type: cifs
             o: "username=${SAMBA_USER},password=${SAMBA_PASS},uid=1000,gid=1000,file_mode=0644,dir_mode=0755"
-            device: "//${SAMBA_IP}/hdd/awards-imgs"
+            device: "//${SAMBA_IP}/${SAMBA_SHARE}"
