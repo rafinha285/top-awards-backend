@@ -28,12 +28,7 @@ class EventService(
     }
 
     @Transactional
-    @Caching(
-        evict = [
-            CacheEvict(value = ["events"], allEntries = true),
-            CacheEvict(value = ["event"], key = "#dto.id")
-        ]
-    )
+    @CacheEvict(value = ["events"], allEntries = true)
     fun create(dto: EventDTO): EventDTO {
         val event = dto.toEntity()
         val savedEvent = eventRepository.save(event)
