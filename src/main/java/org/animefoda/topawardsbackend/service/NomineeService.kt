@@ -72,4 +72,22 @@ class NomineeService(
         nomineeRepository.delete(nominee)
         return nominee.toDTO()
     }
+
+    /**
+     * Atualiza apenas a imageUrl de um nominee
+     */
+    @Transactional
+    @Caching(
+        evict = [
+            CacheEvict("nominees", allEntries = true),
+            CacheEvict("nominee", key = "#id")
+        ]
+    )
+    fun updateImage(id: Int, imageUrl: String): NomineeDTO {
+        val nominee = nomineeRepository.findById(id)
+            .orElseThrow { NotFound("Nominee $id not found") }
+        nominee.imageUrl = imageUrl
+        val savedNominee = nomineeRepository.save(nominee)
+        return savedNominee.toDTO()
+    }
 }

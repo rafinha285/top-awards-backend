@@ -12,6 +12,9 @@ class NomineeEntity : BaseEntity<NomineeEntity,NomineeDTO>() {
     @Column
     var name = ""
 
+    @Column
+    var imageUrl: String? = null
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "nomination",
@@ -21,6 +24,6 @@ class NomineeEntity : BaseEntity<NomineeEntity,NomineeDTO>() {
     val categories: MutableSet<CategoryEntity?> = HashSet<CategoryEntity?>()
 
     public override fun toDTO(): NomineeDTO {
-        return NomineeDTO(this.id, name)
+        return NomineeDTO(this.id, name, imageUrl)
     }
 }
