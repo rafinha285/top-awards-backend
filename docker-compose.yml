@@ -22,6 +22,11 @@ services:
 
             - FRONTEND_URL=${FRONTEND_URL}
             - ADMIN_FRONTEND_URL=${ADMIN_FRONTEND_URL}
+            - UPLOAD_PATH=/app/uploads
+            - SAMBA_USER=${SAMBA_USER}
+            - SAMBA_PASS=${SAMBA_PASS}
+            - SAMBA_IP=${SAMBA_IP}
+        
         
         # Conecta este container à rede externa
         volumes:
@@ -45,4 +50,4 @@ volumes:
         driver_opts:
             type: cifs
             o: "username=${SAMBA_USER},password=${SAMBA_PASS},uid=1000,gid=1000,file_mode=0644,dir_mode=0755"
-            device: "//192.168.18.63/hdd/awards-imgs"
+            device: "//${SAMBA_IP}/hdd/awards-imgs"
