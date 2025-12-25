@@ -38,6 +38,7 @@ class NomineeService(
     fun create(dto: NomineeDTO): NomineeDTO {
         val nominee = NomineeEntity().apply {
             this.name = dto.name
+            this.imageUrl = dto.imageUrl
         }
         val savedNominee = nomineeRepository.save(nominee)
         return savedNominee.toDTO()
@@ -51,10 +52,13 @@ class NomineeService(
         ]
     )
     fun update(id:Int, dto: NomineeDTO): NomineeDTO {
-        nomineeRepository.findById(id)
+        val nominee = nomineeRepository.findById(id)
             .orElseThrow { NotFound("Nominee $id not found") }
-        val nominee = dto.toEntity()
-        nominee.id = id
+        
+        // Atualiza apenas os campos do DTO, preservando relações
+        nominee.name = dto.name
+        nominee.imageUrl = dto.imageUrl
+        
         val savedNominee = nomineeRepository.save(nominee)
         return savedNominee.toDTO()
     }

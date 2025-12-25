@@ -40,6 +40,9 @@ public class SecurityConfiguration {
                         // Allow CORS preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                        // Permitir acesso público às imagens
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         // .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
